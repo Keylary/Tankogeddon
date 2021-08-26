@@ -25,7 +25,9 @@ public:
 		void MoveForward(float AxisValue);
 
 	UFUNCTION()
-		void MoveRight(float AxisValue);
+		void RotateRight(float AxisValue);
+
+	
 	
 protected:
 
@@ -40,6 +42,9 @@ protected:
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 		float RotationSpeed = 100.f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float RotationSmootheness = 0.1f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		USpringArmComponent* SpringArm;
@@ -59,7 +64,8 @@ public:
 	
 
 private:
-	float TargetForwardAxisValue;
-	float TargetRightAxisValue;
+	float TargetForwardAxisValue = 0.f;
+	float TargetRightAxisValue = 0.f;
+	float CurrentRightAxisValue = 0.f;
 	
 };

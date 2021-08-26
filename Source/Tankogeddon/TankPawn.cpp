@@ -5,6 +5,8 @@
 #include <Components/StaticMeshComponent.h>
 #include <GameFramework/SpringArmComponent.h>
 #include <Camera/CameraComponent.h>
+#include <Math/UnrealMathUtility.h>
+#include "Tankogeddon.h"
 
 
 // Sets default values
@@ -46,11 +48,20 @@ void ATankPawn::Tick(float DeltaTime)
 
 	FVector CurrentLocation = GetActorLocation();
 	FVector ForwardVector = GetActorForwardVector();
-	FVector RightVector = GetActorRightVector();
-	FVector MovePosition = CurrentLocation + ForwardVector * MoveSpeed * TargetForwardAxisValue * DeltaTime + RightVector * MoveSpeed * TargetRightAxisValue * DeltaTime;
+	FVector MovePosition = CurrentLocation + ForwardVector * MoveSpeed * TargetForwardAxisValue * DeltaTime;
 	
 	SetActorLocation(MovePosition,true);
+	
+	CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, RotationSmootheness);
 
+	UE_LOG(LogTankogeddon, Verbose, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue = %f"), CurrentRightAxisValue, TargetRightAxisValue);
+	
+	FRotator CurrentRotation = GetActorRotation();
+	float YawRotation = CurrentRightAxisValue * RotationSpeed * DeltaTime;
+	YawRotation += CurrentRotation.Yaw;
+
+	FRotator NewRotation = FRotator(0.f, YawRotation, 0.f);
+	SetActorRotation(NewRotation);	
 }
 
 
@@ -60,7 +71,8 @@ void ATankPawn::MoveForward(float AxisValue)
 	TargetForwardAxisValue = AxisValue;
 }
 
-void ATankPawn::MoveRight(float AxisValue)
+
+void ATankPawn::RotateRight(float AxisValue)
 {
 	TargetRightAxisValue = AxisValue;
 }
