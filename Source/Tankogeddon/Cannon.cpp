@@ -38,11 +38,11 @@ void ACannon::Fire()
 	
     if (Type == ECannonType::FireProjectile)
     {
-        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, "Fire - projectile");
+        GEngine->AddOnScreenDebugMessage(9, 1, FColor::Green, "Fire - projectile");
     }
     else
     {
-        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, "Fire - trace");
+        GEngine->AddOnScreenDebugMessage(9, 1, FColor::Green, "Fire - trace");
     }
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
@@ -51,28 +51,24 @@ void ACannon::Fire()
 
 void ACannon::FireSpecial()
 {
-    if (!bReadyToFire || AmmoNum <= 0)
+    if (!bReadyToFire || AmmoNum <= 0 || BurstShotNum)
     {
+        UE_LOG(LogTankogeddon, Log, TEXT("GUN NOT READY %d %d"), AmmoNum, BurstShotNum);
         return;
     }
     bReadyToFire = false;
 
     --AmmoNum;
-	
-    if (Type == ECannonType::FireProjectile)
-    {
-        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Fire special- projectile");
-
-    }
-    else
-    {
-        GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Fire special - trace");
-
-    }
+    BurstShotNum = 3;
+    UE_LOG(LogTankogeddon, Log, TEXT("Burst started!"));
+    GetWorld()->GetTimerManager().SetTimer(SingleBurstTimer, this, &ACannon::BurstSingleShot, 0.1f,true);
+    GetWorld()->GetTimerManager().SetTimer(BusrtTime, this, &ACannon::StopBurst, 0.1f * BurstShotNum + 0.05f , false);
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
     UE_LOG(LogTankogeddon, Log, TEXT("FireSpecial ammo left: %d"), AmmoNum);
 }
+
+
 
 bool ACannon::IsReadyToFire()
 {
@@ -80,9 +76,32 @@ bool ACannon::IsReadyToFire()
 	
 }
 
+void ACannon::BurstSingleShot()
+{
+    UE_LOG(LogTankogeddon, Log, TEXT("Burst shot called!"));
+    if (Type == ECannonType::FireProjectile)
+    {
+        GEngine->AddOnScreenDebugMessage(8, 1, FColor::Red, "Fire special- projectile");
+
+    }
+    else
+    {
+        GEngine->AddOnScreenDebugMessage(8,1, FColor::Red, "Fire special - trace");
+
+    }
+}
+
+void ACannon::StopBurst()
+{
+    BurstShotNum = 0;
+    UE_LOG(LogTankogeddon, Log, TEXT("Burst stoped!"));
+    GetWorld()->GetTimerManager().ClearTimer(SingleBurstTimer);
+}
+
 void ACannon::Reload()
 {
     bReadyToFire = true;
+    UE_LOG(LogTankogeddon, Log, TEXT("GUN READY"));
     
 }
 

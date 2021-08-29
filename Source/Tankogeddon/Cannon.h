@@ -34,9 +34,12 @@ protected:
         int32 AmmoMax = 10;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+        int32 BurstShotNum = 0;
+	
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
     ECannonType Type = ECannonType::FireProjectile;
 
-    FTimerHandle ReloadTimerHandle;
+    FTimerHandle ReloadTimerHandle, SingleBurstTimer, BusrtTime;
 
     bool bReadyToFire = false;
 
@@ -48,6 +51,10 @@ public:
     void FireSpecial();
 	
     bool IsReadyToFire();
+
+    void BurstSingleShot();
+
+    void StopBurst();
 
 protected:
     virtual void BeginPlay() override;
