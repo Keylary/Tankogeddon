@@ -29,6 +29,9 @@ protected:
 	
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
     float FireDamage = 1;
+	
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
+        int32 AmmoMax = 10;
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Fire params")
     ECannonType Type = ECannonType::FireProjectile;
@@ -51,5 +54,7 @@ protected:
 	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
 
     void Reload();
+
+    int32 AmmoNum = 0;
 };
 

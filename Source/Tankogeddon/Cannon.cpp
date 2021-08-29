@@ -8,6 +8,7 @@
 #include "TimerManager.h"
 #include "Engine/Engine.h"
 #include "Engine/World.h"
+#include "Tankogeddon.h"
 
 
 // Sets default values
@@ -27,12 +28,14 @@ ACannon::ACannon()
 
 void ACannon::Fire()
 {
-    if (!bReadyToFire)
+    if (!bReadyToFire || AmmoNum <=0)
     {
         return;
     }
     bReadyToFire = false;
 
+    --AmmoNum;
+	
     if (Type == ECannonType::FireProjectile)
     {
         GEngine->AddOnScreenDebugMessage(10, 1, FColor::Green, "Fire - projectile");
@@ -43,41 +46,50 @@ void ACannon::Fire()
     }
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
+    UE_LOG(LogTankogeddon, Log, TEXT("Fire ammo left: %d"), AmmoNum);
 }
 
 void ACannon::FireSpecial()
 {
-    if (!bReadyToFire)
+    if (!bReadyToFire || AmmoNum <= 0)
     {
         return;
     }
     bReadyToFire = false;
 
+    --AmmoNum;
+	
     if (Type == ECannonType::FireProjectile)
     {
         GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Fire special- projectile");
+
     }
     else
     {
         GEngine->AddOnScreenDebugMessage(10, 1, FColor::Red, "Fire special - trace");
+
     }
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
+    UE_LOG(LogTankogeddon, Log, TEXT("FireSpecial ammo left: %d"), AmmoNum);
 }
 
 bool ACannon::IsReadyToFire()
 {
     return bReadyToFire;
+	
 }
 
 void ACannon::Reload()
 {
     bReadyToFire = true;
+    
 }
 
 void ACannon::BeginPlay()
 {
     Super::BeginPlay();
+    AmmoNum = AmmoMax;
     Reload();
 }
 
