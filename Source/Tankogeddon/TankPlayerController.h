@@ -22,6 +22,8 @@ protected:
 
 	UPROPERTY()
 		FVector MousePos;
+
+	
 public:
 	ATankPlayerController();
 	virtual void SetupInputComponent() override;
@@ -33,4 +35,5 @@ protected:
 	virtual void BeginPlay() override;
 	void MoveForward(float AxisValue);
 	void RotateRight(float AxisValue);
+	void Fire();
 };

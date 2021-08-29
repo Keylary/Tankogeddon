@@ -4,7 +4,6 @@
 #include "TankPlayerController.h"
 
 #include <DrawDebugHelpers.h>
-#include "Tankogeddon.h"
 #include "TankPawn.h"
 
 ATankPlayerController::ATankPlayerController()
@@ -17,7 +16,7 @@ void ATankPlayerController::SetupInputComponent()
     Super::SetupInputComponent();
     InputComponent->BindAxis("MoveForward", this, &ATankPlayerController::MoveForward);
     InputComponent->BindAxis("RotateRight", this, &ATankPlayerController::RotateRight);
-	
+    InputComponent->BindAction("Fire", IE_Pressed, this, &ATankPlayerController::Fire);
 }
 
 void ATankPlayerController::Tick(float DeltaTime)
@@ -56,3 +55,9 @@ void ATankPlayerController::RotateRight(float AxisValue)
 
     TankPawn->RotateRight(AxisValue);
 }
+
+void ATankPlayerController::Fire()
+{
+    TankPawn->Fire();
+}
+
