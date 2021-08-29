@@ -80,6 +80,9 @@ public:
 	UFUNCTION()
 		void Fire();
 
+	UFUNCTION()
+		void FireSpecial();
+
 
 private:
 	float TargetForwardAxisValue = 0.f;
