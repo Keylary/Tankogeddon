@@ -48,10 +48,13 @@ protected:
 		float RotationSpeed = 100.f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-		float RotationSmootheness = 0.1f;
+		float RotationSmootheness = 0.7f;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
-		float TurretRotationSmootheness = 0.5f;
+		float MovementSmootheness = 0.7f;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
+		float TurretRotationSmootheness = 0.7f;
 
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		USpringArmComponent* SpringArm;
@@ -86,6 +89,7 @@ public:
 
 private:
 	float TargetForwardAxisValue = 0.f;
+	float CurrentForwardAxisValue = 0.f;
 	float TargetRightAxisValue = 0.f;
 	float CurrentRightAxisValue = 0.f;
 	UPROPERTY()
