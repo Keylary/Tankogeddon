@@ -1,14 +1,16 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "Cannon.h"
-#include "Components/SceneComponent.h"
-#include "Components/ArrowComponent.h"
-#include "Components/StaticMeshComponent.h"
-#include "TimerManager.h"
-#include "Engine/Engine.h"
-#include "Engine/World.h"
+#include <Components/SceneComponent.h>
+#include <Components/StaticMeshComponent.h>
+#include <Components/ArrowComponent.h>
+#include <Engine/Engine.h>
+#include <TimerManager.h>
+#include <Engine/World.h>
+
 #include "Tankogeddon.h"
+#include "Projectile.h"
+#include <DrawDebugHelpers.h>
 
 
 // Sets default values
@@ -39,10 +41,35 @@ void ACannon::Fire()
     if (Type == ECannonType::FireProjectile)
     {
         GEngine->AddOnScreenDebugMessage(9, 1, FColor::Green, "Fire - projectile");
+        AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+        if (projectile)
+        {
+            projectile->Start();
+        }
+
     }
     else
     {
         GEngine->AddOnScreenDebugMessage(9, 1, FColor::Green, "Fire - trace");
+        FHitResult hitResult;
+        FCollisionQueryParams traceParams = FCollisionQueryParams(FName(TEXT("FireTrace")), true, this);
+        traceParams.bTraceComplex = true;
+        traceParams.bReturnPhysicalMaterial = false;
+
+        FVector start = ProjectileSpawnPoint->GetComponentLocation();
+        FVector end = ProjectileSpawnPoint->GetForwardVector() * FireRange + start;
+        if (GetWorld()->LineTraceSingleByChannel(hitResult, start, end, ECollisionChannel::ECC_Visibility, traceParams))
+        {
+            DrawDebugLine(GetWorld(), start, hitResult.Location, FColor::Red, false, 0.5f, 0, 5);
+            if (hitResult.Actor.Get())
+            {
+                hitResult.Actor.Get()->Destroy();
+            }
+        }
+        else
+        {
+            DrawDebugLine(GetWorld(), start, end, FColor::Red, false, 0.5f, 0, 5);
+        }
     }
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
@@ -61,8 +88,11 @@ void ACannon::FireSpecial()
     --AmmoNum;
     BurstShotNum = 3;
     UE_LOG(LogTankogeddon, Log, TEXT("Burst started!"));
-    GetWorld()->GetTimerManager().SetTimer(SingleBurstTimer, this, &ACannon::BurstSingleShot, 0.1f,true);
-    GetWorld()->GetTimerManager().SetTimer(BusrtTime, this, &ACannon::StopBurst, 0.1f * BurstShotNum + 0.05f , false);
+
+
+
+    GetWorld()->GetTimerManager().SetTimer(SingleBurstTimer, this, &ACannon::BurstSingleShot, ShotsDelay,true);
+    GetWorld()->GetTimerManager().SetTimer(BusrtTime, this, &ACannon::StopBurst, ShotsDelay * BurstShotNum + ShotsDelay / 2, false);
 
     GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &ACannon::Reload, 1 / FireRate, false);
     UE_LOG(LogTankogeddon, Log, TEXT("FireSpecial ammo left: %d"), AmmoNum);
@@ -82,6 +112,11 @@ void ACannon::BurstSingleShot()
     if (Type == ECannonType::FireProjectile)
     {
         GEngine->AddOnScreenDebugMessage(8, 1, FColor::Red, "Fire special- projectile");
+        AProjectile* projectile = GetWorld()->SpawnActor<AProjectile>(ProjectileClass, ProjectileSpawnPoint->GetComponentLocation(), ProjectileSpawnPoint->GetComponentRotation());
+        if (projectile)
+        {
+            projectile->Start();
+        }
 
     }
     else
