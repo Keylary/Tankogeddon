@@ -2,7 +2,7 @@
 
 #pragma once
 
-#include "Cannon.h"
+
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "AmmoBox.generated.h"
@@ -21,7 +21,8 @@ protected:
 		UStaticMeshComponent* Mesh;
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
 		TSubclassOf<ACannon> CannonClass;
-
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Ammo")
+		int32 AmmoNum;
 public:
 	AAmmoBox();
 

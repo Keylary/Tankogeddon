@@ -41,6 +41,18 @@ protected:
 	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
 		UStaticMeshComponent* TurretMesh;
 	
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		USpringArmComponent* SpringArm;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UCameraComponent* Camera;
+
+	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
+		UArrowComponent* CannonSetupPoint;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Cannon")
+		TSubclassOf<ACannon> CannonClass;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 		float MoveSpeed = 100.f;
 	
@@ -56,24 +68,11 @@ protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Movement|Speed")
 		float TurretRotationSmootheness = 0.7f;
 
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		USpringArmComponent* SpringArm;
+	virtual void BeginPlay() override;
 	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UCameraComponent* Camera;
-	
-	UPROPERTY(VisibleDefaultsOnly, BlueprintReadWrite, Category = "Components")
-		UArrowComponent* CannonSetupPoint;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Turret|Cannon")
-		TSubclassOf<ACannon> CannonClass;
-	UPROPERTY()
-		ACannon* Cannon;
-
-
 	
 	// Called when the game starts or when spawned
-	virtual void BeginPlay() override;
+	
 	
 
 public:	
@@ -86,15 +85,27 @@ public:
 	UFUNCTION()
 		void FireSpecial();
 
+	UFUNCTION()
 	void SetupCannon(TSubclassOf<ACannon> InCannonClass);
+
+	UFUNCTION()
+		void CycleCannon();
+
+	UFUNCTION()
+		ACannon* GetActiveCannon() const;
 
 private:
 	float TargetForwardAxisValue = 0.f;
 	float CurrentForwardAxisValue = 0.f;
 	float TargetRightAxisValue = 0.f;
 	float CurrentRightAxisValue = 0.f;
+
 	UPROPERTY()
 		ATankPlayerController* TankController;
 
-	
+	UPROPERTY()
+		ACannon* ActiveCannon;
+
+	UPROPERTY()
+		ACannon* InactiveCannon;
 };

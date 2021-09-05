@@ -40,8 +40,16 @@ ATankPawn::ATankPawn()
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(SpringArm);
+}
 
+void ATankPawn::MoveForward(float AxisValue)
+{
+	TargetForwardAxisValue = AxisValue;
+}
 
+void ATankPawn::RotateRight(float AxisValue)
+{
+	TargetRightAxisValue = AxisValue;
 }
 
 // Called when the game starts or when spawned
@@ -56,17 +64,37 @@ void ATankPawn::BeginPlay()
 
 void ATankPawn::SetupCannon(TSubclassOf<ACannon> InCannonClass)
 {
-	if (Cannon)
+	if (ActiveCannon)
 	{
-		Cannon->Destroy();
-		CannonClass = nullptr;
+		ActiveCannon->Destroy();
+		ActiveCannon = nullptr;
 	}
 
 	FActorSpawnParameters Params;
 	Params.Instigator = this;
 	Params.Owner = this;
-	Cannon = GetWorld()->SpawnActor<ACannon>(InCannonClass, Params);
-	Cannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+	ActiveCannon = GetWorld()->SpawnActor<ACannon>(InCannonClass, Params);
+	ActiveCannon->AttachToComponent(CannonSetupPoint, FAttachmentTransformRules::SnapToTargetNotIncludingScale);
+}
+
+void ATankPawn::CycleCannon()
+{
+	Swap(ActiveCannon, InactiveCannon);
+	
+	if (ActiveCannon)
+	{
+		ActiveCannon->SetVisibility(true);
+	}
+
+	if (InactiveCannon)
+	{
+		InactiveCannon->SetVisibility(false);
+	}
+}
+
+ACannon* ATankPawn::GetActiveCannon() const
+{
+	return ActiveCannon;
 }
 
 // Called every frame
@@ -86,8 +114,6 @@ void ATankPawn::Tick(float DeltaTime)
 	//CurrentRightAxisValue = FMath::Lerp(CurrentRightAxisValue, TargetRightAxisValue, RotationSmootheness);
 	CurrentRightAxisValue = FMath::FInterpTo(CurrentRightAxisValue, TargetRightAxisValue, DeltaTime, RotationSmootheness);
 
-	UE_LOG(LogTankogeddon, Verbose, TEXT("CurrentRightAxisValue = %f TargetRightAxisValue = %f"), CurrentRightAxisValue, TargetRightAxisValue);
-	
 	FRotator CurrentRotation = GetActorRotation();
 	float YawRotation = CurrentRightAxisValue * RotationSpeed * DeltaTime;
 	YawRotation += CurrentRotation.Yaw;
@@ -110,31 +136,18 @@ void ATankPawn::Tick(float DeltaTime)
 }
 
 
-
-void ATankPawn::MoveForward(float AxisValue)
-{
-	TargetForwardAxisValue = AxisValue;
-}
-
-
-void ATankPawn::RotateRight(float AxisValue)
-{
-	TargetRightAxisValue = AxisValue;
-}
-
 void ATankPawn::Fire()
 {
-	if (Cannon)
+	if (ActiveCannon)
 	{
-		Cannon->Fire();
+		ActiveCannon->Fire();
 	}
 }
 
 void ATankPawn::FireSpecial()
 {
-	if (Cannon)
+	if (ActiveCannon)
 	{
-		Cannon->FireSpecial();
+		ActiveCannon->FireSpecial();
 	}
 }
-

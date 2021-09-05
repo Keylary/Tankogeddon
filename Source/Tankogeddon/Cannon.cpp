@@ -23,6 +23,7 @@ ACannon::ACannon()
 
     Mesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Cannon mesh"));
     Mesh->SetupAttachment(RootComponent);
+    Mesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 
     ProjectileSpawnPoint = CreateDefaultSubobject<UArrowComponent>(TEXT("Spawn point"));
     ProjectileSpawnPoint->SetupAttachment(Mesh);
@@ -152,4 +153,15 @@ void ACannon::EndPlay(const EEndPlayReason::Type EndPlayReason)
     Super::EndPlay(EndPlayReason);
 	
     GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+}
+
+void ACannon::SetVisibility(bool bIsVisible)
+{
+    Mesh->SetHiddenInGame(!bIsVisible);
+}
+
+void ACannon::AddAmmo(int32 InNumAmmo)
+{
+    AmmoNum = FMath::Clamp(AmmoNum + InNumAmmo, 0, AmmoMax);
+    UE_LOG(LogTankogeddon, Log, TEXT("AddAmmo(%d)! AmmoNum: %d"), InNumAmmo, AmmoMax);
 }

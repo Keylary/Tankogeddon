@@ -57,14 +57,16 @@ public:
     ACannon();
 
     void Fire();
-
     void FireSpecial();
 	
     bool IsReadyToFire();
-
     void BurstSingleShot();
-
     void StopBurst();
+
+    void SetVisibility(bool bIsVisible);
+    void AddAmmo(int32 InNumAmmo);
+
+    int32 AmmoNum = 0;
 
 protected:
     virtual void BeginPlay() override;
@@ -72,6 +74,6 @@ protected:
 
     void Reload();
 
-    int32 AmmoNum = 0;
+  
 };
 
