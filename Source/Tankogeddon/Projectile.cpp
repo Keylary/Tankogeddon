@@ -8,6 +8,7 @@
 #include <Engine/World.h>
 
 #include "Tankogeddon.h"
+#include "ActorPoolSubsystem.h"
 
 // Sets default values
 AProjectile::AProjectile()
@@ -26,6 +27,23 @@ void AProjectile::Start()
 {
     GetWorld()->GetTimerManager().SetTimer(MovementTimerHandle, this, &AProjectile::Move, MoveRate, true, MoveRate);
     SetLifeSpan(FlyRange / MoveSpeed);
+}
+
+
+void AProjectile::Stop()
+{
+    GetWorld()->GetTimerManager().ClearTimer(MovementTimerHandle);
+    Mesh->SetHiddenInGame(true);
+
+    UActorPoolSubsystem* Pool = GetWorld()->GetSubsystem<UActorPoolSubsystem>();
+    if (Pool->IsActorInPool(this))
+    {
+        Pool->ReturnActor(this);
+    }
+    else
+    {
+        Destroy();
+    }
 }
 
 void AProjectile::OnMeshOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)

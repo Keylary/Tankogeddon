@@ -4,6 +4,7 @@
 #include "TankPlayerController.h"
 #include <DrawDebugHelpers.h>
 #include "TankPawn.h"
+#include "ActorPoolSubsystem.h"
 
 ATankPlayerController::ATankPlayerController()
 {
@@ -71,3 +72,9 @@ void ATankPlayerController::CycleCannon()
 {
     TankPawn->CycleCannon();
 }
+
+void ATankPlayerController::DumpActorPoolSubsystemStats()
+{
+    GetWorld()->GetSubsystem<UActorPoolSubsystem>()->DumpPoolStats();
+}
+

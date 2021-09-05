@@ -35,6 +35,7 @@ public:
     AProjectile();
 
     void Start();
+    void Stop();
 
 protected:
     UFUNCTION()
